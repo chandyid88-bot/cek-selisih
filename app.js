@@ -183,7 +183,7 @@
     requestAnimationFrame(function(){ $('meterFill').style.width = pct.toFixed(1)+'%'; });
   }
 
-  var BADGE = { ok:['b-ok','Cocok'], diff:['b-diff','Selisih nominal'], onlyA:['b-onlya','Hanya di A'], onlyB:['b-onlyb','Hanya di B'] };
+  var BADGE = { ok:['b-ok','Cocok'], diff:['b-diff','Selisih nominal'], onlyA:['b-onlya','Data di Docs'], onlyB:['b-onlyb','Data di Qris / Bo'] };
 
   function render(){
     var tbody = $('tbody'); tbody.innerHTML = ''; var shown = 0;
@@ -219,15 +219,15 @@
     }
     var t = lastTotals;
     $('footNote').textContent = (mode==='nominal')
-      ? (t.cMatch+' cocok (nominal sama) · '+t.cOnlyA+' hanya di A · '+t.cOnlyB+' hanya di B')
-      : (t.cMatch+' cocok · '+t.cDiff+' selisih nominal · '+t.cOnlyA+' hanya di A · '+t.cOnlyB+' hanya di B');
+      ? (t.cMatch+' cocok (nominal sama) · '+t.cOnlyA+' data di Docs · '+t.cOnlyB+' data di Qris / Bo')
+      : (t.cMatch+' cocok · '+t.cDiff+' selisih nominal · '+t.cOnlyA+' data di Docs · '+t.cOnlyB+' data di Qris / Bo');
   }
 
   /* ---------- CSV ---------- */
   function toCsv(){
     var head = ['Transaction Id','Nama Rekening','Login Id/Username','Data Docs','Data Qris / Bo','Selisih (A-B)','Status'];
     var lines = [head.join(',')];
-    var label = { ok:'Cocok', diff:'Selisih nominal', onlyA:'Hanya di A', onlyB:'Hanya di B' };
+    var label = { ok:'Cocok', diff:'Selisih nominal', onlyA:'Data di Docs', onlyB:'Data di Qris / Bo' };
     lastRows.forEach(function(r){
       lines.push([ r.id, r.nama||'', r.login||'', r.a==null?'':r.a, r.b==null?'':r.b, r.status==='ok'?0:r.diff, label[r.status] ].map(csvCell).join(','));
     });
