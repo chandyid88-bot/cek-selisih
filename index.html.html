@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selisih Transaksi — Rekonsiliasi Otomatis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand"><div class="mark"></div><span>Rekonsiliasi Otomatis</span></div>
+    <h1>Cari <span class="hl">selisih transaksi</span><br>dalam sekali klik.</h1>
+    <p class="lead">Tempel dua daftar transaksi — misalnya <b>Data Docs</b> dan <b>Data Qris</b> — lalu klik (Cari Selisih) maka keduanya akan mencocokkan otomatis dan menandai setiap selisih nominal serta transaksi yang hanya muncul di salah satu sisi.</p>
+  </header>
+
+  <main>
+    <section class="inputs">
+      <div class="panel a">
+        <div class="p-head">
+          <div class="p-title"><span class="dot"></span>Data Docs</div>
+          <span class="count" id="countA">0 baris</span>
+        </div>
+        <div class="p-sub" style="margin-bottom:8px">Sumber Data Pertama</div>
+        <textarea id="inputA" spellcheck="false" placeholder="TRX001 | Budi Santoso | budi88 | 150000&#10;TRX002 | Siti Aminah | siti_a | 89500&#10;TRX003 | Andi Wijaya | andiw | 250000"></textarea>
+        <div class="p-foot">
+          <label class="link file-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3m0 0L8 7m4-4l4 4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+            Impor Excel/CSV
+            <input type="file" accept=".csv,.xlsx,.xls,.txt" hidden data-import="A">
+          </label>
+          <button class="link" data-clear="A">Hapus</button>
+          <span class="import-note" id="noteA"></span>
+        </div>
+      </div>
+      <div class="panel b">
+        <div class="p-head">
+          <div class="p-title"><span class="dot"></span>Data Qris / Bo</div>
+          <span class="count" id="countB">0 baris</span>
+        </div>
+        <div class="p-sub" style="margin-bottom:8px">Sumber Data Kedua</div>
+        <textarea id="inputB" spellcheck="false" placeholder="TRX001 | Budi Santoso | budi88 | 150000&#10;TRX002 | Siti Aminah | siti_a | 89000&#10;TRX004 | Rina Melati | rinam | 47250"></textarea>
+        <div class="p-foot">
+          <label class="link file-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3m0 0L8 7m4-4l4 4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+            Impor Excel/CSV
+            <input type="file" accept=".csv,.xlsx,.xls,.txt" hidden data-import="B">
+          </label>
+          <button class="link" data-clear="B">Hapus</button>
+          <span class="import-note" id="noteB"></span>
+        </div>
+      </div>
+    </section>
+
+    <div class="controls">
+      <div class="mode">
+        <span class="mode-lbl">Cocokkan pakai</span>
+        <div class="seg" role="tablist" id="modeSeg">
+          <button class="seg-btn" data-mode="id" aria-selected="true" role="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l4-4h13a1 1 0 011 1v14a1 1 0 01-1 1H7l-4-4z"/><path d="M11 12h5"/></svg>
+            Tiket / ID
+          </button>
+          <button class="seg-btn" data-mode="nominal" aria-selected="false" role="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            Nominal saja
+          </button>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btnCompare">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h11M4 7l3-3M4 7l3 3M20 17H9m11 0l-3-3m3 3l-3 3"/></svg>
+        Cari Selisih
+      </button>
+    </div>
+    <p class="hint-line" id="hintLine"></p>
+
+    <div class="warn" id="warn" hidden></div>
+
+    <section class="results" id="results" hidden>
+      <div class="summary">
+        <div class="stat"><div class="k">Total Data Docs</div><div class="v" id="sumA">Rp 0</div></div>
+        <div class="stat"><div class="k">Total Data Qris / Bo</div><div class="v" id="sumB">Rp 0</div></div>
+        <div class="stat headline" id="statHead"><div class="k">Selisih (A − B)</div><div class="v" id="sumDiff">Rp 0</div></div>
+      </div>
+      <div class="meter-row">
+        <span class="meter-lbl"><b id="mMatched">0</b> cocok</span>
+        <div class="meter"><i id="meterFill"></i></div>
+        <span class="meter-lbl"><b id="mIssues">0</b> perlu dicek dari <b id="mTotal">0</b> transaksi</span>
+      </div>
+      <div class="toolbar">
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" data-filter="issue" aria-selected="true">Perlu dicek</button>
+          <button class="tab" role="tab" data-filter="all" aria-selected="false">Semua</button>
+          <button class="tab" role="tab" data-filter="ok" aria-selected="false">Cocok</button>
+        </div>
+        <div class="spacer"></div>
+        <button class="csvbtn" id="btnCsv">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+          Unduh CSV
+        </button>
+      </div>
+      <div class="ledger">
+        <table>
+          <thead><tr><th>Transaction Id</th><th>Data Docs</th><th>Data Qris / Bo</th><th>Selisih</th><th>Status</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <p class="foot-note" id="footNote"></p>
+    </section>
+
+    <div class="empty" id="empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 00-2 2v4m0 6v4a2 2 0 002 2h4m6 0h4a2 2 0 002-2v-4m0-6V5a2 2 0 00-2-2h-4"/><path d="M8 12h8"/></svg>
+      <p>Isi kedua kolom lalu tekan “Cari Selisih”. Hasil rekonsiliasi muncul di sini.</p>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
