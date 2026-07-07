@@ -177,7 +177,7 @@
     var issues = t.cDiff + t.cOnlyA + t.cOnlyB, total = t.cMatch + issues;
     var head = $('statHead'), balanced = nearlyEqual(diff,0) && issues===0;
     head.classList.toggle('balanced', balanced);
-    head.querySelector('.k').textContent = balanced ? 'Seimbang' : 'Selisih (A − B)';
+    head.querySelector('.k').textContent = balanced ? 'DATA COCOK' : 'Selisih (A − B)';
     $('mMatched').textContent = t.cMatch; $('mIssues').textContent = issues; $('mTotal').textContent = total;
     var pct = total ? (t.cMatch/total*100) : 0;
     requestAnimationFrame(function(){ $('meterFill').style.width = pct.toFixed(1)+'%'; });
